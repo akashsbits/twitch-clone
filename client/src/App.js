@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { StreamChat } from "stream-chat";
 import { Chat, Channel } from "stream-chat-react";
 import Auth from "./components/Auth";
@@ -9,37 +10,32 @@ import "stream-chat-react/dist/css/index.css";
 const client = StreamChat.getInstance("fgdbgjzw6abd");
 
 const App = () => {
-  const [clientReady, setClientReady] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [channel, setChannel] = useState(null);
 
-  const authToken = false;
+  const authToken = cookies.Token;
 
-  useEffect(() => {
-    const setupClient = async () => {
-      try {
-        await client.connectUser(
-          {
-            id: "akash-srivastava",
-            name: "Akash Srivastava",
-          },
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWthc2gtc3JpdmFzdGF2YSJ9.xV8nMDDDDCW2EnjdJmkAEDhxUMwXV4CO3_VF8ghODj4"
-        );
+  const setupClient = async () => {
+    try {
+      await client.connectUser(
+        {
+          id: cookies.UserId,
+          name: cookies.Name,
+          hashedPassword: cookies.HashedPassword,
+        },
+        authToken
+      );
 
-        const channel = await client.channel("livestream", "twitch-gaming", {
-          name: "Twitch Gaming",
-        });
-        setChannel(channel);
+      const channel = await client.channel("livestream", "twitch-gaming", {
+        name: "Twitch Gaming",
+      });
+      setChannel(channel);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-        setClientReady(true);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    setupClient();
-  }, []);
-
-  if (!clientReady) return null;
+  if (authToken) setupClient();
 
   return (
     // prettier-ignore

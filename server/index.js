@@ -32,9 +32,7 @@ app.post("/signup", async (req, res) => {
     // Create a token for user with id i.e. userId
     const userToken = client.createUserToken(userId);
 
-    res
-      .status(200)
-      .json({ username, password, userId, hashedPassword, userToken });
+    res.status(200).json({ username, userId, hashedPassword, userToken });
   } catch (err) {
     console.log(err);
     res.status(500).json({ msg: err });
