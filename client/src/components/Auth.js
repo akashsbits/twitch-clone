@@ -10,25 +10,30 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState(null);
   const [error, setError] = useState(false);
 
-  const handleSubmit = async () => {
-    if (password !== confirmPassword) {
-      setError(true);
-      return;
+  const handleSubmit = async (endpointName) => {
+    try {
+      if (!isLogin && password !== confirmPassword) {
+        setError(true);
+        return;
+      }
+
+      const response = await axios.post(
+        `http://localhost:5000/${endpointName}`,
+        {
+          username,
+          password,
+        }
+      );
+
+      setCookie("Name", response.data.username);
+      setCookie("HashedPassword", response.data.hashedPassword);
+      setCookie("UserId", response.data.userId);
+      setCookie("Token", response.data.userToken);
+
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
     }
-
-    const response = await axios.post(`http://localhost:5000/signup`, {
-      username,
-      password,
-    });
-
-    setCookie("Name", response.data.username);
-    setCookie("HashedPassword", response.data.hashedPassword);
-    setCookie("UserId", response.data.userId);
-    setCookie("Token", response.data.userToken);
-
-    window.location.reload();
-
-    console.log(response);
   };
 
   return (
@@ -59,7 +64,10 @@ const Auth = () => {
             />
           )}
           {error && <p>Password and confirm password do not match.</p>}
-          <button className="default-btn" onClick={handleSubmit}>
+          <button
+            className="default-btn"
+            onClick={() => handleSubmit(isLogin ? "login" : "signup")}
+          >
             Go
           </button>
         </div>

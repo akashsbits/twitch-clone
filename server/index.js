@@ -4,6 +4,7 @@ const cors = require("cors");
 const { v1: uuidv1 } = require("uuid");
 const bcrypt = require("bcrypt");
 const { connect } = require("getstream");
+const StreamChat = require("stream-chat").StreamChat;
 
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -36,6 +37,52 @@ app.post("/signup", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ msg: err });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Instantiate a new client (server side)
+    const client = connect(
+      process.env.API_KEY,
+      process.env.API_KEY_SECRET,
+      process.env.APP_ID
+    );
+
+    // Instantiate a new client (server side)
+    const chatClient = StreamChat.getInstance(
+      process.env.API_KEY,
+      process.env.API_KEY_SECRET
+    );
+
+    // Query all users
+    const { users } = await chatClient.queryUsers({ name: username });
+
+    if (!users.length) return res.status(400).json({ msg: "User not found" });
+
+    // Compare password
+    const success = await bcrypt.compare(password, users[0].hashedPassword);
+
+    const userId = users[0].id;
+
+    // Create a new token for the existing user
+    const userToken = client.createUserToken(userId);
+
+    const confirmName = users[0].name;
+    const hashedPassword = users[0].hashedPassword;
+
+    if (success) {
+      return res
+        .status(200)
+        .json({ username: confirmName, userId, hashedPassword, userToken });
+    } else {
+      return res.status(500).json({ msg: "Login failed" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ msg: err });
   }
 });
 
