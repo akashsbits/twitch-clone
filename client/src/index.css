@@ -76,3 +76,41 @@ code {
 .default-btn:hover {
   background-color: #5c16c5;
 }
+
+.logout-btn {
+  background-color: #212121;
+  color: #fff;
+  border: none;
+  border-radius: 0.125rem;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 5px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.logout-btn div {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  border-radius: 0.25rem;
+}
+
+.logout-btn div:hover {
+  background-color: #3b3b44;
+}
+
+.logout-btn-ico {
+  display: flex;
+}
+
+.logout-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+}
+
+.logout-btn-text {
+  margin-left: 8px;
+}
