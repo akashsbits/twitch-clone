@@ -12,8 +12,16 @@ const client = StreamChat.getInstance("fgdbgjzw6abd");
 const App = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [channel, setChannel] = useState(null);
+  const [users, setUsers] = useState(null);
 
   const authToken = cookies.Token;
+
+  useEffect(async () => {
+    if (authToken) {
+      const { users } = await client.queryUsers({ role: "user" });
+      setUsers(users);
+    }
+  }, []);
 
   const setupClient = async () => {
     try {
@@ -44,7 +52,7 @@ const App = () => {
       {authToken && <Chat client={client} theme="livestream dark">
         <Channel channel={channel}>
           <Video />
-          <MessagingContainer />
+          <MessagingContainer users={users} />
         </Channel>
       </Chat>}
     </>
