@@ -7,7 +7,7 @@ import MessagingContainer from "./components/MessagingContainer";
 import Video from "./components/Video";
 import "stream-chat-react/dist/css/index.css";
 
-const client = StreamChat.getInstance("fgdbgjzw6abd");
+const client = StreamChat.getInstance(process.env.REACT_APP_API_KEY);
 
 const App = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);

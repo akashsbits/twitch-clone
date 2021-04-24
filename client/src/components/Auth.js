@@ -18,7 +18,7 @@ const Auth = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:5000/${endpointName}`,
+        `${process.env.REACT_APP_API_URL}/${endpointName}`,
         {
           username,
           password,
